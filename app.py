@@ -1,11 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 from flask import Flask, redirect, render_template, request
 from flask import send_from_directory
 from random import seed, randint
 from datetime import datetime, date
 from sqlalchemy.dialects.postgresql import JSON
 from flask_heroku import Heroku
+import config
 
 import os
 from flask_sqlalchemy import SQLAlchemy
@@ -17,9 +19,11 @@ app = application
 
 # app.config.from_object(os.environ['APP_SETTINGS'])
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+
 app.config['SQLALCHEMY_DATABASE_URI'] = \
-    'postgresql://postgres:root@localhost:5432/shortnr'
+    'postgres://vfjglauvifljcv:574bf440fa22be02088c0cacd71e2bfe3f8c560f8aa3d06f6097afdd0d9db3dc@ec2-54-165-36-134.compute-1.amazonaws.com:5432/dfa196a8t1murm'
 
 db = SQLAlchemy(app)
 heroku = Heroku(app)
@@ -46,6 +50,7 @@ class URLMap(db.Model):
         expiry,
         visit_count,
         ):
+
         self.short_url = short_url
         self.long_url = long_url
         self.created_at = created_at
@@ -91,11 +96,11 @@ def home():
 @app.route('/add', methods=['GET', 'POST'])
 def add():
     long_url = request.form.get('long_url')
-    print(long_url)
+    print (long_url)
     seedval = randint(100, 999)
     seed(seedval)
     num = randint(100000000000, 999999999999)
-    print (seed)
+    #print seed
     print (num)
     s = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     hash_str = ''
@@ -113,8 +118,12 @@ def add():
 
         # return redirect(url_for('view_posts'))
     # return render_template('post_form.html', postform=postform)
+    # return "<a href = http://0.0.0.0:5000/" + hash_str +">http://0.0.0.0.:5000/" + hash_str + "</a>"
 
-    return "<a href = http://0.0.0.0:5000/" + hash_str +">http://0.0.0.0.:5000/" + hash_str + "</a>"  
+        return '<a href = https://limitless-plateau-73003.herokuapp.com/' \
+            + hash_str \
+            + '>https://limitless-plateau-73003.herokuapp.com/' \
+            + hash_str + '</a>'
 
 
 @app.route('/favicon.ico')
