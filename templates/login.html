@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script type="text/javascript">
+        function checkURL() {
+            var x = document.forms["shortener"]["long_url"].value;
+            if (x == "") {
+                alert("URL cannot be blank");
+                return false;
+            }
+
+            var pattern = new RegExp('^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$');
+
+            if (!pattern.test(x)) {
+                alert("Please enter a valid url");
+                return false;
+            }
+
+        }
+    </script>
+    <title>
+        short.nr
+    </title>
+</head>
+
+<body>
+    <div class="body-container">
+        <form name="shortener" class="login-container" action="/add" method="post" onsubmit="return checkURL();" autocomplete="off">
+            <div class="info-logo"></div>
+            <!-- <div class="login-title">Login</div> -->
+            <div class="username-input-container">
+		<div class='username-input-label'>Enter URL</div>                
+		<input class="username-input" type='text' name="long_url">
+            </div>
+            <input type="submit" class="login-button" value="Shorten URL">
+        </form>
+    </div>
+
+
+</body>
+
+</html>
