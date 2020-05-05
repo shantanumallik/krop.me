@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, jsonify
 from flask import send_from_directory
 from random import seed, randint
 from datetime import datetime, date
@@ -90,13 +90,17 @@ def redirect_to_url(short_url):
 @app.route('/')
 def home():
 
-    return render_template('login.html')
+    return render_template('index.html')
 
 
-@app.route('/add', methods=['GET', 'POST'])
+@app.route('/add', methods=['GET'])
 def add():
-    long_url = request.form.get('long_url')
-    print (long_url)
+
+    print("entered")
+    long_url = request.args.get('long_url')
+    print('long_url ' + long_url)
+    
+    
     seedval = randint(100, 999)
     seed(seedval)
     num = randint(100000000000, 999999999999)
@@ -109,21 +113,37 @@ def add():
         print (int(index))
         hash_str = s[int(index)] + hash_str
         num = num / 62
+    
+    key = URLMap.query.filter_by(short_url=hash_str).first()
 
-    if request.method == 'POST':
+    while key is not None:
+        hash_str = ''
+        seedval = randint(100, 999)
+        seed(seedval)
+        num = randint(100000000000, 999999999999)
+        #print seed
+        print (num)
+
+        while num >= 1:
+            index = num % 62
+            print (int(index))
+            hash_str = s[int(index)] + hash_str
+            num = num / 62
+        key = URLMap.query.filter_by(short_url=hash_str).first()
+
+
+    if request.method == 'GET':
         pf = URLMap(hash_str, long_url, datetime.now(),
                     int(date.today().year) + 3, 0)
         db.session.add(pf)
         db.session.commit()
+    return jsonify({'hash_str': hash_str})
 
         # return redirect(url_for('view_posts'))
     # return render_template('post_form.html', postform=postform)
     # return "<a href = http://0.0.0.0:5000/" + hash_str +">http://0.0.0.0.:5000/" + hash_str + "</a>"
 
-        return '<a href = https://limitless-plateau-73003.herokuapp.com/' \
-            + hash_str \
-            + '>https://limitless-plateau-73003.herokuapp.com/' \
-            + hash_str + '</a>'
+    
 
 
 @app.route('/favicon.ico')
